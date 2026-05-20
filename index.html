@@ -66,7 +66,7 @@
           </button>
           <button class="nav-item" data-view="planner" type="button" aria-label="Gerador de plano">
             <span data-icon="sparkles"></span>
-            <span>Plano IA</span>
+            <span>Avaliacao</span>
           </button>
           <button class="nav-item" data-view="workout" type="button" aria-label="Treino">
             <span data-icon="dumbbell"></span>
@@ -79,6 +79,10 @@
           <button class="nav-item" data-view="business" type="button" aria-label="Venda">
             <span data-icon="credit-card"></span>
             <span>Venda</span>
+          </button>
+          <button class="nav-item" data-view="delivery" type="button" aria-label="Entrega">
+            <span data-icon="file-check"></span>
+            <span>Entrega</span>
           </button>
         </nav>
 
@@ -256,7 +260,7 @@
 
               <button class="primary-button wide" type="submit">
                 <span data-icon="wand-sparkles"></span>
-                Criar plano com IA
+                Gerar consultoria completa
               </button>
             </section>
 
@@ -348,17 +352,17 @@
                 <article class="price-card">
                   <span>Start</span>
                   <strong>R$ 97</strong>
-                  <p>Plano mensal com treino, check-in semanal e ajuste automatico.</p>
+                  <p>Anamnese, dossie inicial, treino mensal e check-in semanal automatizado.</p>
                 </article>
                 <article class="price-card featured">
                   <span>Pro</span>
                   <strong>R$ 197</strong>
-                  <p>Treino, nutricao orientativa, chat assicrono e relatorios.</p>
+                  <p>Treino, ajustes por readiness, relatorio quinzenal e mensagens prontas.</p>
                 </article>
                 <article class="price-card">
                   <span>Studio</span>
                   <strong>R$ 497</strong>
-                  <p>Gestao de ate 8 alunos para personal, box ou academia boutique.</p>
+                  <p>Painel para ate 8 alunos, dossies, alertas de risco e acompanhamento.</p>
                 </article>
               </div>
             </section>
@@ -374,7 +378,56 @@
                   Copiar
                 </button>
               </div>
-              <textarea id="offerText" rows="10">Oi! Eu criei uma consultoria com IA que monta seu treino, acompanha seus check-ins e ajusta carga/volume toda semana. Voce recebe um plano claro, acompanhamento no celular e evolucao mensuravel sem depender de horario fixo. Posso te mandar uma avaliacao inicial gratuita?</textarea>
+              <textarea id="offerText" rows="10">Oi! Estou abrindo vagas para uma consultoria fitness com IA. Voce preenche uma avaliacao, recebe um dossie com treino personalizado, regras de progressao, cuidados de seguranca e check-ins para ajustar carga/volume toda semana. A vaga fundadora esta R$ 97 no primeiro mes. Quer que eu te mande a avaliacao inicial?</textarea>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="delivery">
+          <div class="delivery-grid">
+            <section class="panel premium-report">
+              <div class="panel-heading">
+                <div>
+                  <span class="eyebrow">Entrega premium</span>
+                  <h2>Dossie do aluno</h2>
+                </div>
+                <button class="ghost-button" id="copyReport" type="button">
+                  <span data-icon="copy"></span>
+                  Copiar dossie
+                </button>
+              </div>
+              <div class="report-sheet" id="reportSheet"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="eyebrow">Evolucao</span>
+                  <h2>Projecao de 30 dias</h2>
+                </div>
+              </div>
+              <div class="progress-roadmap">
+                <article>
+                  <span>Semana 1</span>
+                  <strong>Base tecnica</strong>
+                  <p>Ajustar execucao, carga inicial e rotina de check-in.</p>
+                </article>
+                <article>
+                  <span>Semana 2</span>
+                  <strong>Progressao controlada</strong>
+                  <p>Aumentar carga quando sono, energia e dor estiverem dentro da meta.</p>
+                </article>
+                <article>
+                  <span>Semana 3</span>
+                  <strong>Volume inteligente</strong>
+                  <p>Subir ou cortar series conforme aderencia e fadiga acumulada.</p>
+                </article>
+                <article>
+                  <span>Semana 4</span>
+                  <strong>Revisao e novo ciclo</strong>
+                  <p>Consolidar resultados, atualizar fotos/medidas e gerar novo bloco.</p>
+                </article>
+              </div>
             </section>
           </div>
         </section>

@@ -143,6 +143,73 @@ function renderPlan(plan) {
       <p>${plan.message || "Plano pronto para envio ao aluno."}</p>
     </article>
   `;
+  renderReport();
+}
+
+function renderReport() {
+  const plan = state.plan || buildPlan(getFormData());
+  const profile = getFormData();
+  const bmi = profile.height ? (profile.weight / ((profile.height / 100) ** 2)).toFixed(1) : "-";
+
+  $("#reportSheet").innerHTML = `
+    <div class="report-header">
+      <span>AtlasFit AI</span>
+      <strong>${profile.name}</strong>
+      <p>${plan.title}</p>
+    </div>
+    <div class="report-grid">
+      <div><span>Objetivo</span><strong>${profile.goal}</strong></div>
+      <div><span>Nivel</span><strong>${profile.level}</strong></div>
+      <div><span>Treinos</span><strong>${profile.days}x/sem</strong></div>
+      <div><span>IMC ref.</span><strong>${bmi}</strong></div>
+    </div>
+    <div class="report-section">
+      <strong>Resumo executivo</strong>
+      <p>${plan.summary || "Plano personalizado com base na anamnese, rotina e check-ins."}</p>
+    </div>
+    <div class="report-section">
+      <strong>Plano semanal</strong>
+      <ul>${plan.weekly.map((day, index) => `<li>Dia ${index + 1}: ${day}</li>`).join("")}</ul>
+    </div>
+    <div class="report-section">
+      <strong>Regras de ajuste automatico</strong>
+      <ul>${plan.rules.slice(0, 5).map((rule) => `<li>${rule}</li>`).join("")}</ul>
+    </div>
+    <div class="report-section">
+      <strong>Mensagem para o aluno</strong>
+      <p>${plan.message}</p>
+    </div>
+  `;
+}
+
+function reportText() {
+  const plan = state.plan || buildPlan(getFormData());
+  const profile = getFormData();
+  return [
+    `ATLASFIT AI - DOSSIE DO ALUNO`,
+    "",
+    `Aluno: ${profile.name}`,
+    `Objetivo: ${profile.goal}`,
+    `Nivel: ${profile.level}`,
+    `Frequencia: ${profile.days}x por semana`,
+    "",
+    "Resumo:",
+    plan.summary || "Plano personalizado com base na anamnese.",
+    "",
+    "Plano semanal:",
+    ...plan.weekly.map((day, index) => `${index + 1}. ${day}`),
+    "",
+    "Regras automaticas:",
+    ...plan.rules.map((rule) => `- ${rule}`),
+    "",
+    "Seguranca:",
+    ...(plan.safety || []).map((rule) => `- ${rule}`),
+    "",
+    `Nutricao: ${plan.nutrition}`,
+    `Metrica: ${plan.metric}`,
+    "",
+    `Mensagem: ${plan.message || ""}`
+  ].join("\n");
 }
 
 function normalizeAiPlan(plan, fallback) {
@@ -305,6 +372,7 @@ function init() {
   renderClients();
   state.plan = buildPlan(getFormData());
   renderPlan(state.plan);
+  renderReport();
   calculateAdjustment();
 
   $$(".nav-item").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
@@ -343,6 +411,10 @@ function init() {
 
   $("#copyOffer").addEventListener("click", () => {
     copyText($("#offerText").value, "Oferta copiada.");
+  });
+
+  $("#copyReport").addEventListener("click", () => {
+    copyText(reportText(), "Dossie copiado.");
   });
 
   $("#exportPlan").addEventListener("click", exportPlan);
