@@ -10,7 +10,46 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <section class="public-landing" id="publicLanding">
+      <div class="landing-overlay">
+        <header class="landing-nav">
+          <div class="brand">
+            <div class="brand-mark">A</div>
+            <div>
+              <strong>AtlasFit AI</strong>
+              <span>Consultoria fitness com IA</span>
+            </div>
+          </div>
+          <button class="ghost-light-button" id="openPanel" type="button">
+            <span data-icon="layout-dashboard"></span>
+            Painel
+          </button>
+        </header>
+
+        <div class="landing-content">
+          <span class="landing-kicker">Treino personalizado em minutos</span>
+          <h1>Seu personal digital monta, acompanha e ajusta seu treino toda semana</h1>
+          <p>Preencha uma avaliacao rapida, receba um plano individual e use check-ins para a IA adaptar carga, volume e foco conforme sua evolucao.</p>
+          <div class="landing-actions">
+            <button class="primary-button landing-cta" id="startAssessment" type="button">
+              <span data-icon="clipboard-list"></span>
+              Comecar avaliacao
+            </button>
+            <a class="whatsapp-button" id="whatsappLead" href="https://wa.me/?text=Oi%21%20Quero%20fazer%20minha%20avaliacao%20no%20AtlasFit%20AI." target="_blank" rel="noreferrer">
+              <span data-icon="message-circle"></span>
+              Chamar no WhatsApp
+            </a>
+          </div>
+          <div class="landing-proof">
+            <span><strong>4 min</strong> para anamnese</span>
+            <span><strong>24/7</strong> ajustes por check-in</span>
+            <span><strong>R$ 97</strong> plano fundador</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="app-shell is-hidden" id="appShell">
       <aside class="sidebar" aria-label="Navegacao principal">
         <div class="brand">
           <div class="brand-mark">A</div>

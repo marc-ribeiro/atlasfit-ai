@@ -53,6 +53,13 @@ function setView(viewId) {
   $$(".nav-item").forEach((button) => button.classList.toggle("active", button.dataset.view === viewId));
 }
 
+function enterApp(viewId = "planner") {
+  $("#publicLanding")?.classList.add("is-hidden");
+  $("#appShell")?.classList.remove("is-hidden");
+  setView(viewId);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function getFormData() {
   return {
     name: $("#studentName").value.trim() || "Aluno",
@@ -301,6 +308,9 @@ function init() {
   calculateAdjustment();
 
   $$(".nav-item").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
+
+  $("#startAssessment")?.addEventListener("click", () => enterApp("planner"));
+  $("#openPanel")?.addEventListener("click", () => enterApp("dashboard"));
 
   $("#intensity").addEventListener("input", (event) => {
     $("#intensityValue").textContent = event.target.value;
