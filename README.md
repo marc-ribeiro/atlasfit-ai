@@ -1,6 +1,6 @@
 # AtlasFit AI
 
-Personal trainer autonomo com anamnese completa, geracao de plano por IA, treino guiado, check-in e oferta comercial.
+Personal trainer autonomo com avaliacao inicial completa, geracao de plano por IA, treino guiado, check-in e oferta comercial.
 
 ## Rodar localmente
 
