@@ -615,10 +615,15 @@ input[type="range"] {
 
 .client-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) repeat(3, minmax(120px, 0.4fr)) auto;
+  grid-template-columns: minmax(180px, 1fr) repeat(3, minmax(120px, 0.4fr)) minmax(120px, auto);
   align-items: center;
   gap: 12px;
   padding: 14px;
+}
+
+.client-row.selected-client {
+  border-color: var(--green);
+  background: #eff8f1;
 }
 
 .risk-high {
