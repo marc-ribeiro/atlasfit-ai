@@ -47,6 +47,20 @@ button {
   min-height: 100vh;
 }
 
+body[data-mode="student"] .admin-only,
+body[data-mode="student"] #generateQuick,
+body[data-mode="student"] #resetDemo {
+  display: none;
+}
+
+body[data-mode="student"] .app-shell {
+  grid-template-columns: 1fr;
+}
+
+body[data-mode="student"] .sidebar {
+  display: none;
+}
+
 .public-landing {
   min-height: 100vh;
   background:
@@ -67,6 +81,13 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
+}
+
+.landing-login {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .landing-content {
@@ -769,6 +790,35 @@ input[type="range"] {
   margin-top: 6px;
 }
 
+.student-portal {
+  display: grid;
+  gap: 14px;
+}
+
+.student-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #13211b;
+  color: #ffffff;
+}
+
+.student-hero p {
+  margin: 8px 0 0;
+  color: #d6e1db;
+}
+
+.student-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 14px;
+}
+
+.student-exercise {
+  grid-template-columns: minmax(0, 1fr) 120px 44px;
+}
+
 svg {
   width: 18px;
   height: 18px;
@@ -805,6 +855,7 @@ svg {
   .workout-layout,
   .planner-grid,
   .delivery-grid,
+  .student-grid,
   .metric-grid {
     grid-template-columns: 1fr;
   }

@@ -20,10 +20,16 @@
               <span>Consultoria fitness com IA</span>
             </div>
           </div>
-          <button class="ghost-light-button" id="openPanel" type="button">
-            <span data-icon="layout-dashboard"></span>
-            Painel
-          </button>
+          <div class="landing-login">
+            <button class="ghost-light-button" id="openPanel" type="button">
+              <span data-icon="layout-dashboard"></span>
+              Entrar como admin
+            </button>
+            <button class="ghost-light-button" id="openStudent" type="button">
+              <span data-icon="user"></span>
+              Entrar como aluno
+            </button>
+          </div>
         </header>
 
         <div class="landing-content">
@@ -84,6 +90,10 @@
             <span data-icon="file-check"></span>
             <span>Entrega</span>
           </button>
+          <button class="nav-item" data-view="student" type="button" aria-label="Portal do aluno">
+            <span data-icon="smartphone"></span>
+            <span>Portal aluno</span>
+          </button>
         </nav>
 
         <div class="sidebar-card">
@@ -96,9 +106,13 @@
         <header class="topbar">
           <div>
             <span class="eyebrow">Coach autonomo</span>
-            <h1>Operacao diaria do personal digital</h1>
+            <h1 id="topTitle">Operacao diaria do personal digital</h1>
           </div>
           <div class="top-actions">
+            <button class="ghost-button" id="backHome" type="button">
+              <span data-icon="log-out"></span>
+              Sair
+            </button>
             <button class="icon-button" id="resetDemo" type="button" aria-label="Reiniciar demo" title="Reiniciar demo">
               <span data-icon="rotate-ccw"></span>
             </button>
@@ -428,6 +442,69 @@
                   <p>Consolidar resultados, atualizar fotos/medidas e gerar novo bloco.</p>
                 </article>
               </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="student">
+          <div class="student-portal">
+            <section class="panel student-hero">
+              <div>
+                <span class="eyebrow">Meu treino</span>
+                <h2 id="studentNameTitle">Marina Costa</h2>
+                <p id="studentSummary">Seu plano da semana, check-in e orientacoes ficam aqui.</p>
+              </div>
+              <span class="status-chip">Aluno</span>
+            </section>
+
+            <div class="student-grid">
+              <section class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <span class="eyebrow">Hoje</span>
+                    <h2>Treino recomendado</h2>
+                  </div>
+                </div>
+                <div class="exercise-list" id="studentWorkout"></div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <span class="eyebrow">Check-in</span>
+                    <h2>Como voce esta?</h2>
+                  </div>
+                </div>
+                <div class="checkin-stack">
+                  <label>
+                    Energia
+                    <input id="studentEnergy" type="range" min="1" max="10" value="6" />
+                  </label>
+                  <label>
+                    Sono
+                    <input id="studentSleep" type="range" min="1" max="10" value="7" />
+                  </label>
+                  <label>
+                    Dor muscular
+                    <input id="studentSoreness" type="range" min="1" max="10" value="4" />
+                  </label>
+                  <button class="secondary-button wide" id="studentCheckin" type="button">
+                    <span data-icon="send"></span>
+                    Enviar check-in
+                  </button>
+                  <div class="adjustment-box" id="studentFeedback"></div>
+                </div>
+              </section>
+            </div>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="eyebrow">Meu plano</span>
+                  <h2>Resumo semanal</h2>
+                </div>
+              </div>
+              <div class="plan-output" id="studentPlan"></div>
             </section>
           </div>
         </section>

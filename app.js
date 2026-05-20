@@ -1,6 +1,7 @@
 const state = {
   plan: null,
   activeClientId: 1,
+  mode: "admin",
   clients: [
     {
       id: 1,
@@ -128,10 +129,25 @@ function setView(viewId) {
   $$(".nav-item").forEach((button) => button.classList.toggle("active", button.dataset.view === viewId));
 }
 
-function enterApp(viewId = "planner") {
+function enterApp(viewId = "planner", mode = "admin") {
+  state.mode = mode;
   $("#publicLanding")?.classList.add("is-hidden");
   $("#appShell")?.classList.remove("is-hidden");
+  document.body.dataset.mode = mode;
+  $("#topTitle").textContent = mode === "student" ? "Portal do aluno" : "Operacao diaria do personal digital";
+  $$(".nav-item").forEach((button) => {
+    const adminOnly = ["dashboard", "planner", "clients", "business", "delivery"].includes(button.dataset.view);
+    button.classList.toggle("admin-only", adminOnly);
+  });
+  renderStudentPortal();
   setView(viewId);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function exitApp() {
+  $("#appShell")?.classList.add("is-hidden");
+  $("#publicLanding")?.classList.remove("is-hidden");
+  document.body.dataset.mode = "";
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -195,7 +211,7 @@ function selectClient(clientId, viewId = "delivery") {
   renderPlan(state.plan);
   renderReport();
   renderClients();
-  enterApp(viewId);
+  enterApp(viewId, state.mode);
 }
 
 function getFormData() {
@@ -320,6 +336,52 @@ function renderReport() {
   `;
 }
 
+function renderStudentPortal() {
+  const client = activeClient();
+  const plan = client.plan || state.plan || buildPlan(getFormData());
+  client.plan = plan;
+
+  $("#studentNameTitle").textContent = client.name;
+  $("#studentSummary").textContent = `${client.goal} | ${client.level} | ${client.profile?.days || 4} treinos por semana`;
+  $("#studentWorkout").innerHTML = state.exercises
+    .map((exercise) => `
+      <article class="exercise-item student-exercise">
+        <div><strong>${exercise.name}</strong><span>${exercise.prescription}</span></div>
+        <strong>${exercise.load}</strong>
+        <button class="icon-button complete-exercise" type="button" aria-label="Concluir exercicio" title="Concluir exercicio">
+          <span data-icon="check"></span>
+        </button>
+      </article>
+    `)
+    .join("");
+  $("#studentPlan").innerHTML = `
+    <article class="plan-block">
+      <strong>${plan.title}</strong>
+      <p>${plan.summary || "Plano personalizado para esta semana."}</p>
+      <ul>${plan.weekly.map((day, index) => `<li>Dia ${index + 1}: ${day}</li>`).join("")}</ul>
+    </article>
+    <article class="plan-block">
+      <strong>Orientacoes</strong>
+      <ul>${plan.rules.slice(0, 4).map((rule) => `<li>${rule}</li>`).join("")}</ul>
+    </article>
+  `;
+  lucide.createIcons();
+}
+
+function submitStudentCheckin() {
+  const energy = Number($("#studentEnergy").value);
+  const sleep = Number($("#studentSleep").value);
+  const soreness = Number($("#studentSoreness").value);
+  const readiness = Math.round((energy * 0.45 + sleep * 0.35 + (10 - soreness) * 0.2) * 10);
+  const feedback = readiness >= 75
+    ? "Check-in recebido. Hoje voce pode progredir com controle e manter RIR 2."
+    : readiness >= 55
+      ? "Check-in recebido. Mantenha as cargas e reduza uma serie se sentir queda tecnica."
+      : "Check-in recebido. Hoje priorize treino leve, mobilidade e informe o personal se houver dor.";
+  $("#studentFeedback").textContent = `${feedback} Readiness: ${readiness}%.`;
+  showToast("Check-in enviado.");
+}
+
 function reportText() {
   const plan = state.plan || buildPlan(getFormData());
   const profile = getFormData();
@@ -387,6 +449,7 @@ async function createPlanWithAi() {
     activeClient().plan = state.plan;
     saveFormToClient();
     renderPlan(state.plan);
+    renderStudentPortal();
     status.textContent = data.mode === "openai" ? "IA real" : "Demo local";
     showToast(data.mode === "openai" ? "Plano criado com IA real." : "Sem chave: usei o motor demo local.");
   } catch (error) {
@@ -394,6 +457,7 @@ async function createPlanWithAi() {
     activeClient().plan = state.plan;
     saveFormToClient();
     renderPlan(state.plan);
+    renderStudentPortal();
     status.textContent = "IA indisponivel";
     showToast(`IA indisponivel: ${error.message}`);
   } finally {
@@ -524,8 +588,11 @@ function init() {
 
   $$(".nav-item").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
 
-  $("#startAssessment")?.addEventListener("click", () => enterApp("planner"));
-  $("#openPanel")?.addEventListener("click", () => enterApp("dashboard"));
+  $("#startAssessment")?.addEventListener("click", () => enterApp("planner", "admin"));
+  $("#openPanel")?.addEventListener("click", () => enterApp("dashboard", "admin"));
+  $("#openStudent")?.addEventListener("click", () => enterApp("student", "student"));
+  $("#backHome")?.addEventListener("click", exitApp);
+  $("#studentCheckin")?.addEventListener("click", submitStudentCheckin);
 
   $("#intensity").addEventListener("input", (event) => {
     $("#intensityValue").textContent = event.target.value;
