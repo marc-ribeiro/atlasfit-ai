@@ -814,6 +814,16 @@ input[type="range"] {
   font-size: 0.86rem;
 }
 
+.guided-exercises {
+  display: grid;
+  gap: 12px;
+}
+
+.plan-exercise-card {
+  grid-template-columns: 112px minmax(0, 1fr) 90px;
+  box-shadow: none;
+}
+
 .library-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 220px;
@@ -954,6 +964,17 @@ input[type="range"] {
 .client-row.selected-client {
   border-color: var(--green);
   background: #eff8f1;
+}
+
+.client-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.delete-client {
+  color: #b93d28;
 }
 
 .risk-high {

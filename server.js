@@ -293,6 +293,17 @@ async function routeClient(req, res, id, action) {
     return;
   }
 
+  if (req.method === "DELETE") {
+    if (!isAdminOwner) {
+      sendJson(res, 403, { error: "Apenas o personal pode excluir aluno." });
+      return;
+    }
+    db.clients = db.clients.filter((item) => item.id !== Number(id));
+    await writeDb(db);
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
   if (req.method === "GET") {
     sendJson(res, 200, { client });
     return;

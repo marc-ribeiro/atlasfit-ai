@@ -216,6 +216,15 @@ function exerciseMedia(exercise, label = "Ver tecnica") {
   `;
 }
 
+function exerciseVisualCards(label = "Como fazer") {
+  return state.exercises.map((exercise) => `
+    <article class="exercise-item plan-exercise-card">
+      ${exerciseMedia(exercise, label)}
+      <strong>${exercise.load}</strong>
+    </article>
+  `).join("");
+}
+
 const templates = {
   hipertrofia: {
     split: ["Upper tecnico", "Lower forca", "Push hipertrofia", "Pull + posterior", "Mobilidade ativa"],
@@ -516,6 +525,10 @@ function renderPlan(plan) {
       <strong>Mensagem pronta</strong>
       <p>${plan.message || "Plano pronto para envio ao aluno."}</p>
     </article>
+    <article class="plan-block">
+      <strong>Exercicios guiados</strong>
+      <div class="guided-exercises">${exerciseVisualCards("Ver tecnica")}</div>
+    </article>
   `;
   renderReport();
 }
@@ -553,6 +566,10 @@ function renderReport() {
       <strong>Mensagem para o aluno</strong>
       <p>${plan.message}</p>
     </div>
+    <div class="report-section">
+      <strong>Exercicios com guia visual</strong>
+      <div class="guided-exercises">${exerciseVisualCards("Como executar")}</div>
+    </div>
   `;
 }
 
@@ -583,6 +600,10 @@ function renderStudentPortal() {
     <article class="plan-block">
       <strong>Orientacoes</strong>
       <ul>${plan.rules.slice(0, 4).map((rule) => `<li>${rule}</li>`).join("")}</ul>
+    </article>
+    <article class="plan-block">
+      <strong>Guia visual</strong>
+      <div class="guided-exercises">${exerciseVisualCards("Como fazer")}</div>
     </article>
   `;
   lucide.createIcons();
@@ -773,10 +794,15 @@ function renderClients() {
         <span>${client.adherence}% aderencia</span>
         <span class="pill ${client.risk === "high" ? "risk-high" : "risk-ok"}">${client.risk === "high" ? "Risco" : "Estavel"}</span>
         <span>${client.next}</span>
-        <button class="ghost-button open-client" type="button" data-id="${client.id}">
-          <span data-icon="file-check"></span>
-          Dossie
-        </button>
+        <div class="client-actions">
+          <button class="ghost-button open-client" type="button" data-id="${client.id}">
+            <span data-icon="file-check"></span>
+            Dossie
+          </button>
+          <button class="icon-button delete-client" type="button" data-id="${client.id}" aria-label="Excluir aluno" title="Excluir aluno">
+            <span data-icon="trash-2"></span>
+          </button>
+        </div>
       </article>
     `)
     .join("");
@@ -970,6 +996,31 @@ function init() {
     if (!button) return;
     selectClient(Number(button.dataset.id), "delivery");
     showToast("Dossie do aluno aberto.");
+  });
+
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest(".delete-client");
+    if (!button) return;
+    const id = Number(button.dataset.id);
+    const client = state.clients.find((item) => item.id === id);
+    if (!client) return;
+    const confirmed = window.confirm(`Excluir ${client.name}? Esta acao nao pode ser desfeita.`);
+    if (!confirmed) return;
+
+    try {
+      await api(`/api/clients/${id}`, { method: "DELETE" });
+      state.clients = state.clients.filter((item) => item.id !== id);
+      state.activeClientId = state.clients[0]?.id || null;
+      if (activeClient()) {
+        fillFormFromClient(activeClient());
+        state.plan = activeClient().plan || buildPlan(getFormData());
+        renderPlan(state.plan);
+      }
+      renderClients();
+      showToast("Aluno excluido.");
+    } catch (error) {
+      showToast(error.message);
+    }
   });
 
   if (window.location.hash === "#aluno") {
