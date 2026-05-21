@@ -2,6 +2,8 @@ const state = {
   plan: null,
   activeClientId: 1,
   mode: "admin",
+  token: localStorage.getItem("atlasfit_token") || "",
+  user: null,
   clients: [
     {
       id: 1,
@@ -116,6 +118,65 @@ const templates = {
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
+async function api(path, options = {}) {
+  const response = await fetch(path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}),
+      ...(options.headers || {})
+    }
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Falha na requisicao.");
+  return data;
+}
+
+async function loginDemo(role) {
+  const credentials = role === "student"
+    ? { email: "marina@atlasfit.ai", password: "aluno123" }
+    : { email: "admin@atlasfit.ai", password: "admin123" };
+  const data = await api("/api/login", {
+    method: "POST",
+    body: JSON.stringify(credentials)
+  });
+  state.token = data.token;
+  state.user = data.user;
+  localStorage.setItem("atlasfit_token", data.token);
+  await loadSession(role);
+}
+
+async function loadSession(preferredMode = "admin") {
+  const data = await api("/api/me");
+  state.user = data.user;
+
+  if (data.user.role === "student") {
+    state.clients = data.client ? [data.client] : [];
+    state.activeClientId = data.client?.id || null;
+    if (data.client) {
+      fillFormFromClient(data.client);
+      state.plan = data.client.plan || buildPlan(getFormData());
+      data.client.plan = state.plan;
+      renderPlan(state.plan);
+      renderStudentPortal();
+    }
+    enterApp("student", "student");
+    return;
+  }
+
+  const clientsData = await api("/api/clients");
+  state.clients = clientsData.clients;
+  state.activeClientId = state.clients[0]?.id || null;
+  if (activeClient()) {
+    fillFormFromClient(activeClient());
+    state.plan = activeClient().plan || buildPlan(getFormData());
+    activeClient().plan = state.plan;
+    renderPlan(state.plan);
+  }
+  renderClients();
+  enterApp(preferredMode === "student" ? "student" : "dashboard", "admin");
+}
+
 function showToast(message) {
   const toast = $("#toast");
   toast.textContent = message;
@@ -145,6 +206,9 @@ function enterApp(viewId = "planner", mode = "admin") {
 }
 
 function exitApp() {
+  state.token = "";
+  state.user = null;
+  localStorage.removeItem("atlasfit_token");
   $("#appShell")?.classList.add("is-hidden");
   $("#publicLanding")?.classList.remove("is-hidden");
   document.body.dataset.mode = "";
@@ -177,8 +241,9 @@ function fillFormFromClient(client) {
   $("#intensityValue").textContent = $("#intensity").value;
 }
 
-function saveFormToClient() {
+async function saveFormToClient() {
   const client = activeClient();
+  if (!client) return;
   const data = getFormData();
   client.name = data.name;
   client.goal = data.goal;
@@ -200,6 +265,12 @@ function saveFormToClient() {
     intensity: data.intensity
   };
   renderClients();
+  if (state.token && state.user?.role === "admin") {
+    await api(`/api/clients/${client.id}`, {
+      method: "PUT",
+      body: JSON.stringify(client)
+    });
+  }
 }
 
 function selectClient(clientId, viewId = "delivery") {
@@ -212,6 +283,16 @@ function selectClient(clientId, viewId = "delivery") {
   renderReport();
   renderClients();
   enterApp(viewId, state.mode);
+}
+
+async function savePlanToClient() {
+  const client = activeClient();
+  if (!client || !state.token || state.user?.role !== "admin") return;
+  client.plan = state.plan;
+  await api(`/api/clients/${client.id}/plan`, {
+    method: "PUT",
+    body: JSON.stringify({ plan: state.plan })
+  });
 }
 
 function getFormData() {
@@ -447,7 +528,8 @@ async function createPlanWithAi() {
 
     state.plan = data.plan ? normalizeAiPlan(data.plan, fallback) : fallback;
     activeClient().plan = state.plan;
-    saveFormToClient();
+    await saveFormToClient();
+    await savePlanToClient();
     renderPlan(state.plan);
     renderStudentPortal();
     status.textContent = data.mode === "openai" ? "IA real" : "Demo local";
@@ -455,7 +537,8 @@ async function createPlanWithAi() {
   } catch (error) {
     state.plan = fallback;
     activeClient().plan = state.plan;
-    saveFormToClient();
+    await saveFormToClient();
+    await savePlanToClient();
     renderPlan(state.plan);
     renderStudentPortal();
     status.textContent = "IA indisponivel";
@@ -579,18 +662,20 @@ function init() {
   renderTimeline();
   renderExercises();
   renderClients();
-  fillFormFromClient(activeClient());
-  state.plan = activeClient().plan || buildPlan(getFormData());
-  activeClient().plan = state.plan;
-  renderPlan(state.plan);
-  renderReport();
+  if (activeClient()) {
+    fillFormFromClient(activeClient());
+    state.plan = activeClient().plan || buildPlan(getFormData());
+    activeClient().plan = state.plan;
+    renderPlan(state.plan);
+    renderReport();
+  }
   calculateAdjustment();
 
   $$(".nav-item").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
 
-  $("#startAssessment")?.addEventListener("click", () => enterApp("planner", "admin"));
-  $("#openPanel")?.addEventListener("click", () => enterApp("dashboard", "admin"));
-  $("#openStudent")?.addEventListener("click", () => enterApp("student", "student"));
+  $("#startAssessment")?.addEventListener("click", () => loginDemo("admin").then(() => setView("planner")).catch((error) => showToast(error.message)));
+  $("#openPanel")?.addEventListener("click", () => loginDemo("admin").catch((error) => showToast(error.message)));
+  $("#openStudent")?.addEventListener("click", () => loginDemo("student").catch((error) => showToast(error.message)));
   $("#backHome")?.addEventListener("click", exitApp);
   $("#studentCheckin")?.addEventListener("click", submitStudentCheckin);
 
@@ -633,17 +718,12 @@ function init() {
 
   $("#exportPlan").addEventListener("click", exportPlan);
 
-  $("#addClient").addEventListener("click", () => {
-    const id = Date.now();
+  $("#addClient").addEventListener("click", async () => {
     const count = state.clients.length + 1;
-    state.clients.unshift({
-      id,
+    const payload = {
       name: `Novo aluno ${count}`,
       goal: "hipertrofia",
       level: "iniciante",
-      adherence: 100,
-      risk: "ok",
-      next: "Preencher anamnese",
       profile: {
         age: 30,
         weight: 70,
@@ -659,11 +739,19 @@ function init() {
         schedule: "",
         nutritionNotes: "",
         intensity: 6
-      },
-      plan: null
-    });
-    selectClient(id, "planner");
-    showToast("Novo aluno criado. Preencha a anamnese.");
+      }
+    };
+    try {
+      const data = await api("/api/clients", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      state.clients.unshift(data.client);
+      selectClient(data.client.id, "planner");
+      showToast("Novo aluno criado. Preencha a avaliacao.");
+    } catch (error) {
+      showToast(error.message);
+    }
   });
 
   $("#resetDemo").addEventListener("click", () => {

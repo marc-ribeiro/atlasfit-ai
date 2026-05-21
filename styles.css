@@ -198,6 +198,12 @@ body[data-mode="student"] .sidebar {
   color: #ffffff;
 }
 
+.demo-login-note {
+  margin: 12px 0 0;
+  color: #cddbd3;
+  font-size: 0.8rem;
+}
+
 .sidebar {
   display: flex;
   flex-direction: column;
