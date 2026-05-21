@@ -630,6 +630,27 @@ label {
   font-weight: 800;
 }
 
+.field-help {
+  position: relative;
+  display: block;
+  min-height: 34px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+label:hover .field-help,
+label:focus-within .field-help {
+  border-color: var(--green);
+  background: #eff8f1;
+  color: var(--ink);
+}
+
 input,
 select,
 textarea {
@@ -705,10 +726,153 @@ input[type="range"] {
 
 .exercise-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 140px 44px;
+  grid-template-columns: 112px minmax(0, 1fr) 120px 44px;
   align-items: center;
   gap: 12px;
   padding: 14px;
+}
+
+.exercise-thumb {
+  width: 112px;
+  aspect-ratio: 16 / 11;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  object-fit: cover;
+}
+
+.exercise-details {
+  margin-top: 8px;
+}
+
+.exercise-details summary {
+  width: fit-content;
+  color: var(--green);
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.exercise-details ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.exercise-details p {
+  margin: 8px 0 0;
+  color: #9a4b32;
+  font-size: 0.86rem;
+}
+
+.library-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.exercise-library-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.library-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.library-card img {
+  width: 150px;
+  aspect-ratio: 16 / 11;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  object-fit: cover;
+}
+
+.library-card-body {
+  min-width: 0;
+}
+
+.library-title strong,
+.library-title span {
+  display: block;
+}
+
+.library-title span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.coach-script {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #eff8f1;
+}
+
+.coach-script span {
+  color: var(--green);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.coach-script p,
+.safety-note {
+  margin: 5px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.library-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.library-columns b {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.library-columns ol,
+.library-columns ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.42;
+}
+
+.substitution-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.substitution-row span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.safety-note {
+  color: #9a4b32;
+  font-size: 0.86rem;
 }
 
 .exercise-item strong,
@@ -913,7 +1077,7 @@ input[type="range"] {
 }
 
 .student-exercise {
-  grid-template-columns: minmax(0, 1fr) 120px 44px;
+  grid-template-columns: 112px minmax(0, 1fr) 110px 44px;
 }
 
 svg {
@@ -994,6 +1158,17 @@ svg {
   .student-grid,
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .exercise-library-grid,
+  .library-controls,
+  .library-card,
+  .library-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .library-card img {
+    width: 100%;
   }
 }
 
@@ -1085,6 +1260,10 @@ svg {
   .exercise-item,
   .client-row {
     grid-template-columns: 1fr;
+  }
+
+  .exercise-thumb {
+    width: 100%;
   }
 
   h1 {

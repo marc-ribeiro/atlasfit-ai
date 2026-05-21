@@ -8,7 +8,11 @@ const ASSETS = [
   "/favicon.svg",
   "/logo.svg",
   "/icon-192.svg",
-  "/icon-512.svg"
+  "/icon-512.svg",
+  "/exercise-leg-press.svg",
+  "/exercise-rdl.svg",
+  "/exercise-leg-curl.svg",
+  "/exercise-calf-raise.svg"
 ];
 
 self.addEventListener("install", (event) => {

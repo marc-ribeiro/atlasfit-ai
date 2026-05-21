@@ -93,6 +93,122 @@ const state = {
   ]
 };
 
+const exerciseLibrary = {
+  "Leg press 45": {
+    image: "exercise-leg-press.svg",
+    muscle: "pernas",
+    equipment: "Maquina",
+    level: "Iniciante a avancado",
+    cues: ["Pes no meio da plataforma", "Joelhos acompanham a linha dos pes", "Desca controlando sem tirar o quadril do banco"],
+    steps: ["Ajuste o banco para manter lombar apoiada.", "Empurre a plataforma sem travar os joelhos.", "Desca ate onde consegue manter quadril no banco."],
+    live: "Pensa em empurrar o chao para longe. Controle a descida por 2 segundos e suba forte sem perder alinhamento.",
+    mistakes: ["Juntar os joelhos", "Tirar o quadril do banco", "Descer rapido demais"],
+    substitutes: ["Agachamento goblet", "Cadeira extensora", "Hack machine"],
+    caution: "Evite travar totalmente os joelhos no topo."
+  },
+  "Levantamento terra romeno": {
+    image: "exercise-rdl.svg",
+    muscle: "pernas",
+    equipment: "Barra ou halteres",
+    level: "Intermediario",
+    cues: ["Coluna neutra", "Quadril vai para tras", "Barra perto das pernas"],
+    steps: ["Segure a carga na frente do corpo.", "Leve o quadril para tras como se fechasse uma porta.", "Sinta alongar posterior e volte contraindo gluteos."],
+    live: "Nao e agachar. O joelho dobra pouco e o quadril faz quase todo o movimento. Mantem a carga raspando nas pernas.",
+    mistakes: ["Arredondar lombar", "Afastar a barra do corpo", "Dobrar demais os joelhos"],
+    substitutes: ["Stiff com halteres", "Hip thrust", "Mesa flexora"],
+    caution: "Pare a descida quando perder postura ou sentir lombar."
+  },
+  "Mesa flexora": {
+    image: "exercise-leg-curl.svg",
+    muscle: "pernas",
+    equipment: "Maquina",
+    level: "Todos",
+    cues: ["Quadril colado no banco", "Suba controlando", "Segure 1 segundo no pico"],
+    steps: ["Ajuste o rolo acima do calcanhar.", "Flexione os joelhos ate sentir posterior contrair.", "Volte devagar sem bater os pesos."],
+    live: "Segura um segundo la em cima. Se precisar jogar o quadril, a carga esta alta demais.",
+    mistakes: ["Levantar quadril", "Soltar a volta", "Encurtar amplitude"],
+    substitutes: ["Flexora sentado", "Flexora unilateral", "RDL leve"],
+    caution: "Nao use impulso no final da repeticao."
+  },
+  "Panturrilha em pe": {
+    image: "exercise-calf-raise.svg",
+    muscle: "pernas",
+    equipment: "Maquina ou peso corporal",
+    level: "Todos",
+    cues: ["Suba o maximo possivel", "Pause no topo", "Desca ate alongar"],
+    steps: ["Apoie a ponta dos pes com seguranca.", "Suba ate contrair bem a panturrilha.", "Desca devagar ate alongar."],
+    live: "Nao pula. Sobe, pausa, desce. A panturrilha responde muito melhor com controle total.",
+    mistakes: ["Fazer rapido demais", "Pouca amplitude", "Virar os tornozelos para fora"],
+    substitutes: ["Panturrilha sentado", "Panturrilha no leg press", "Panturrilha unilateral"],
+    caution: "Mantenha tornozelos alinhados."
+  }
+};
+
+const equipmentHelp = {
+  academia: "Academia completa: maquinas, cabos, barras, halteres, bancos, leg press, puxadores e cardio.",
+  halteres: "Halteres e banco: pares de halteres, banco reto/inclinado e colchonete. Sem depender de maquinas.",
+  casa: "Casa com acessorios: elasticos, colchonete, cadeira firme, mochila com carga, step ou peso improvisado.",
+  "peso-corporal": "Sem equipamento: apenas peso do corpo, usando agachamentos, flexoes, prancha, mobilidade e cardio local."
+};
+
+const librarySeeds = [
+  ["Agachamento livre", "pernas", "Barra", "Avancado", ["Pes firmes no chao", "Tronco estavel", "Joelhos acompanham os pes"], "Desce como se sentasse entre os calcanhares. Mantem peito aberto e sobe empurrando o chao."],
+  ["Agachamento goblet", "pernas", "Halter", "Iniciante", ["Segure o halter junto ao peito", "Cotovelos apontam para baixo", "Controle a descida"], "O peso na frente ajuda seu tronco. Usa ele como guia e nao deixa o joelho cair para dentro."],
+  ["Cadeira extensora", "pernas", "Maquina", "Todos", ["Ajuste o eixo no joelho", "Suba controlando", "Pause no topo"], "Estica o joelho e aperta a frente da coxa. Volta devagar, sem deixar o peso bater."],
+  ["Hip thrust", "pernas", "Barra ou maquina", "Intermediario", ["Queixo levemente baixo", "Costelas fechadas", "Contraia gluteos no topo"], "Sobe pensando em enrolar o quadril. Se sentir lombar, reduz amplitude e ajusta postura."],
+  ["Supino reto", "peito", "Barra", "Intermediario", ["Escapulas encaixadas", "Pes firmes", "Barra desce no meio do peito"], "Controla a barra ate o peito e empurra para cima sem perder o ombro encaixado."],
+  ["Supino com halteres", "peito", "Halteres", "Intermediario", ["Punhos alinhados", "Cotovelos a 45 graus", "Desca com controle"], "Pensa em abracar o movimento. Halteres descem com controle e sobem juntos."],
+  ["Flexao de bracos", "peito", "Peso corporal", "Todos", ["Corpo em linha", "Maos abaixo dos ombros", "Peito vai ao chao"], "Trava abdomen e gluteos. Se perder a linha do corpo, use apoio mais alto."],
+  ["Crucifixo maquina", "peito", "Maquina", "Todos", ["Ombros baixos", "Cotovelos semiflexionados", "Feche sem bater"], "Fecha como se abracasse alguem. Sente o peito, nao o pescoço."],
+  ["Puxada frente", "costas", "Maquina", "Todos", ["Peito aberto", "Cotovelos descem", "Nao puxe com biceps"], "Traz a barra para a parte alta do peito. Primeiro desce as escapulas, depois os cotovelos."],
+  ["Remada baixa", "costas", "Maquina", "Todos", ["Coluna alta", "Cotovelos para tras", "Pausa no final"], "Puxa os cotovelos para o bolso de tras. Nao joga o tronco para roubar."],
+  ["Remada unilateral", "costas", "Halter", "Intermediario", ["Apoio firme", "Coluna neutra", "Puxe com cotovelo"], "Imagina ligar o cotovelo ao quadril. Sobe a carga sem girar o tronco."],
+  ["Barra fixa assistida", "costas", "Maquina ou elastico", "Intermediario", ["Pegada firme", "Peito sobe", "Desca controlando"], "Nao pense em subir o queixo. Pense em trazer o peito ate a barra."],
+  ["Desenvolvimento halteres", "ombros", "Halteres", "Intermediario", ["Punhos alinhados", "Abdomen firme", "Nao arqueie lombar"], "Empurra os halteres para cima como se fechasse uma janela acima da cabeca."],
+  ["Elevacao lateral", "ombros", "Halteres", "Todos", ["Cotovelos levemente dobrados", "Suba ate linha do ombro", "Controle a volta"], "Leva os cotovelos para os lados, nao as maos. Peso leve e movimento limpo."],
+  ["Face pull", "ombros", "Cabo", "Todos", ["Corda na altura do rosto", "Cotovelos abertos", "Aperte parte alta das costas"], "Puxa a corda para o rosto e separa as pontas. Excelente para postura."],
+  ["Rosca direta", "bracos", "Barra", "Todos", ["Cotovelos parados", "Punhos neutros", "Sem balancar"], "Sobe a barra com o biceps. Se o corpo balanca, diminui a carga."],
+  ["Rosca alternada", "bracos", "Halteres", "Todos", ["Ombros baixos", "Gire a palma ao subir", "Controle a descida"], "Sobe uma mao por vez e espreme no topo. A descida tambem conta."],
+  ["Triceps corda", "bracos", "Cabo", "Todos", ["Cotovelos fixos", "Abra a corda no final", "Postura alta"], "Empurra para baixo e abre a corda no final como se rasgasse uma folha."],
+  ["Triceps testa", "bracos", "Barra ou halteres", "Intermediario", ["Cotovelos apontam para cima", "Desca controlado", "Nao abra demais"], "Move so o antebraco. O braco fica quase parado como uma dobradica."],
+  ["Prancha", "core", "Peso corporal", "Todos", ["Costelas fechadas", "Gluteos contraidos", "Pes firmes"], "Pensa em aproximar costelas e quadril. Se lombar afundar, encerra a serie."],
+  ["Dead bug", "core", "Peso corporal", "Iniciante", ["Lombar no chao", "Movimento lento", "Respire controlando"], "Move braco e perna opostos sem deixar a lombar sair do chao."],
+  ["Abdominal cabo", "core", "Cabo", "Intermediario", ["Quadril parado", "Enrole a coluna", "Controle a volta"], "Nao puxe com o braco. Enrola o tronco como se fechasse um zíper."],
+  ["Esteira caminhada inclinada", "cardio", "Esteira", "Todos", ["Postura alta", "Passada constante", "Respiracao nasal se possivel"], "Ritmo em que voce consegue falar frases curtas. Isso e zona 2."],
+  ["Bike ergometrica", "cardio", "Bike", "Todos", ["Joelho alinhado", "Cadencia fluida", "Sem travar ombros"], "Pedala redondo. Se a coxa queima demais cedo, reduz carga e mantem constancia."]
+].forEach(([name, muscle, equipment, level, cues, live]) => {
+  if (!exerciseLibrary[name]) {
+    exerciseLibrary[name] = {
+      image: "logo.svg",
+      muscle,
+      equipment,
+      level,
+      cues,
+      steps: cues,
+      live,
+      mistakes: ["Executar rapido demais", "Perder postura", "Usar carga antes de dominar tecnica"],
+      substitutes: ["Variante em maquina", "Variante com halteres", "Peso corporal assistido"],
+      caution: "Interrompa se houver dor articular, tontura ou falta de ar incomum."
+    };
+  }
+});
+
+function exerciseMedia(exercise, label = "Ver tecnica") {
+  const info = exerciseLibrary[exercise.name] || {};
+  return `
+    <img class="exercise-thumb" src="${info.image || "logo.svg"}" alt="${exercise.name}" />
+    <div>
+      <strong>${exercise.name}</strong>
+      <span>${exercise.prescription}</span>
+      <details class="exercise-details">
+        <summary>${label}</summary>
+        <ul>${(info.cues || []).map((cue) => `<li>${cue}</li>`).join("")}</ul>
+        <p>${info.caution || ""}</p>
+      </details>
+    </div>
+  `;
+}
+
 const templates = {
   hipertrofia: {
     split: ["Upper tecnico", "Lower forca", "Push hipertrofia", "Pull + posterior", "Mobilidade ativa"],
@@ -244,6 +360,7 @@ function fillFormFromClient(client) {
   $("#days").value = profile.days || 4;
   $("#sessionDuration").value = profile.sessionDuration || 50;
   $("#equipment").value = profile.equipment || "academia";
+  $("#equipmentHelp").textContent = equipmentHelp[$("#equipment").value];
   $("#limitations").value = profile.limitations || "";
   $("#injuries").value = profile.injuries || "";
   $("#medical").value = profile.medical || "";
@@ -342,6 +459,7 @@ function buildPlan(data) {
   const restriction = data.limitations ? `Adaptar exercicios que irritem ${data.limitations}.` : "Sem restricoes relatadas.";
   const injury = data.injuries ? `Historico informado: ${data.injuries}. Evitar progressao agressiva se houver dor.` : "Sem lesoes historicas informadas.";
   const duration = data.sessionDuration ? `Treinos desenhados para ${data.sessionDuration} minutos.` : "Treinos de 45 a 60 minutos.";
+  const equipmentRule = equipmentHelp[data.equipment] || "Equipamento informado sera usado para adaptar exercicios.";
 
   return {
     title: `${data.name}: plano de ${data.goal}`,
@@ -350,6 +468,7 @@ function buildPlan(data) {
     nutrition: template.nutrition,
     rules: [
       duration,
+      equipmentRule,
       `Volume inicial: ${volume}.`,
       `Intensidade: RIR 2 na maioria das series, RIR 1 no ultimo exercicio seguro.`,
       `${deload}.`,
@@ -440,7 +559,7 @@ function renderStudentPortal() {
   $("#studentWorkout").innerHTML = state.exercises
     .map((exercise) => `
       <article class="exercise-item student-exercise">
-        <div><strong>${exercise.name}</strong><span>${exercise.prescription}</span></div>
+        ${exerciseMedia(exercise, "Como fazer")}
         <strong>${exercise.load}</strong>
         <button class="icon-button complete-exercise" type="button" aria-label="Concluir exercicio" title="Concluir exercicio">
           <span data-icon="check"></span>
@@ -583,7 +702,7 @@ function renderExercises() {
   $("#exerciseList").innerHTML = state.exercises
     .map((exercise, index) => `
       <article class="exercise-item">
-        <div><strong>${exercise.name}</strong><span>${exercise.prescription}</span></div>
+        ${exerciseMedia(exercise)}
         <strong>${exercise.load}</strong>
         <button class="icon-button complete-exercise" type="button" aria-label="Concluir exercicio" title="Concluir exercicio" data-index="${index}">
           <span data-icon="check"></span>
@@ -592,6 +711,51 @@ function renderExercises() {
     `)
     .join("");
   lucide.createIcons();
+}
+
+function renderExerciseLibrary() {
+  const search = ($("#exerciseSearch")?.value || "").toLowerCase();
+  const muscle = $("#muscleFilter")?.value || "todos";
+  const entries = Object.entries(exerciseLibrary)
+    .filter(([name, info]) => {
+      const haystack = [name, info.muscle, info.equipment, info.level, ...(info.cues || [])].join(" ").toLowerCase();
+      const matchesSearch = !search || haystack.includes(search);
+      const matchesMuscle = muscle === "todos" || info.muscle === muscle;
+      return matchesSearch && matchesMuscle;
+    })
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  $("#exerciseLibraryGrid").innerHTML = entries.map(([name, info]) => `
+    <article class="library-card">
+      <img src="${info.image || "logo.svg"}" alt="${name}" />
+      <div class="library-card-body">
+        <div class="library-title">
+          <div>
+            <strong>${name}</strong>
+            <span>${info.muscle} | ${info.equipment} | ${info.level}</span>
+          </div>
+        </div>
+        <div class="coach-script">
+          <span>Coach ao vivo</span>
+          <p>${info.live}</p>
+        </div>
+        <div class="library-columns">
+          <div>
+            <b>Passo a passo</b>
+            <ol>${(info.steps || info.cues || []).map((step) => `<li>${step}</li>`).join("")}</ol>
+          </div>
+          <div>
+            <b>Evite</b>
+            <ul>${(info.mistakes || []).map((mistake) => `<li>${mistake}</li>`).join("")}</ul>
+          </div>
+        </div>
+        <div class="substitution-row">
+          ${(info.substitutes || []).map((item) => `<span>${item}</span>`).join("")}
+        </div>
+        <p class="safety-note">${info.caution}</p>
+      </div>
+    </article>
+  `).join("");
 }
 
 function renderClients() {
@@ -674,6 +838,7 @@ function copyText(text, success) {
 function init() {
   renderTimeline();
   renderExercises();
+  renderExerciseLibrary();
   renderClients();
   if (activeClient()) {
     fillFormFromClient(activeClient());
@@ -699,9 +864,15 @@ function init() {
   });
   $("#backHome")?.addEventListener("click", exitApp);
   $("#studentCheckin")?.addEventListener("click", submitStudentCheckin);
+  $("#exerciseSearch")?.addEventListener("input", renderExerciseLibrary);
+  $("#muscleFilter")?.addEventListener("change", renderExerciseLibrary);
 
   $("#intensity").addEventListener("input", (event) => {
     $("#intensityValue").textContent = event.target.value;
+  });
+
+  $("#equipment").addEventListener("change", (event) => {
+    $("#equipmentHelp").textContent = equipmentHelp[event.target.value];
   });
 
   $("#planForm").addEventListener("submit", (event) => {

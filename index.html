@@ -108,6 +108,10 @@
             <span data-icon="dumbbell"></span>
             <span>Treino</span>
           </button>
+          <button class="nav-item" data-view="library" type="button" aria-label="Biblioteca de exercicios">
+            <span data-icon="book-open"></span>
+            <span>Biblioteca</span>
+          </button>
           <button class="nav-item" data-view="clients" type="button" aria-label="Clientes">
             <span data-icon="users"></span>
             <span>Clientes</span>
@@ -266,9 +270,11 @@
                   Equipamento
                   <select id="equipment">
                     <option value="academia" selected>Academia completa</option>
-                    <option value="casa">Casa</option>
                     <option value="halteres">Halteres e banco</option>
+                    <option value="casa">Casa com acessorios</option>
+                    <option value="peso-corporal">Sem equipamento</option>
                   </select>
+                  <span class="field-help" id="equipmentHelp">Academia completa: maquinas, cabos, barras, halteres, banco e cardio.</span>
                 </label>
                 <label>
                   Restricoes
@@ -365,6 +371,37 @@
               </div>
             </section>
           </div>
+        </section>
+
+        <section class="view" id="library">
+          <section class="panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Coach visual</span>
+                <h2>Biblioteca didatica de exercicios</h2>
+              </div>
+            </div>
+            <div class="library-controls">
+              <label>
+                Buscar
+                <input id="exerciseSearch" type="search" placeholder="Ex: agachamento, peito, halteres..." />
+              </label>
+              <label>
+                Grupo muscular
+                <select id="muscleFilter">
+                  <option value="todos">Todos</option>
+                  <option value="pernas">Pernas</option>
+                  <option value="peito">Peito</option>
+                  <option value="costas">Costas</option>
+                  <option value="ombros">Ombros</option>
+                  <option value="bracos">Bracos</option>
+                  <option value="core">Core</option>
+                  <option value="cardio">Cardio</option>
+                </select>
+              </label>
+            </div>
+            <div class="exercise-library-grid" id="exerciseLibraryGrid"></div>
+          </section>
         </section>
 
         <section class="view" id="clients">
