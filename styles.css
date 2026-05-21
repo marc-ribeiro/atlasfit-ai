@@ -630,6 +630,54 @@ label {
   font-weight: 800;
 }
 
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.info-dot {
+  position: relative;
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  cursor: help;
+}
+
+.info-dot::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  z-index: 5;
+  width: min(300px, 72vw);
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #101815;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: 160ms ease;
+  pointer-events: none;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.22);
+}
+
+.info-dot:hover::after,
+.info-dot:focus::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .field-help {
   position: relative;
   display: block;

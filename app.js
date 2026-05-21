@@ -151,6 +151,13 @@ const equipmentHelp = {
   "peso-corporal": "Sem equipamento: apenas peso do corpo, usando agachamentos, flexoes, prancha, mobilidade e cardio local."
 };
 
+function updateEquipmentHelp(value = $("#equipment")?.value || "academia") {
+  const text = equipmentHelp[value] || equipmentHelp.academia;
+  $("#equipmentHelp").textContent = text;
+  $("#equipmentInfo").setAttribute("data-tooltip", text);
+  $("#equipmentInfo").setAttribute("aria-label", text);
+}
+
 const librarySeeds = [
   ["Agachamento livre", "pernas", "Barra", "Avancado", ["Pes firmes no chao", "Tronco estavel", "Joelhos acompanham os pes"], "Desce como se sentasse entre os calcanhares. Mantem peito aberto e sobe empurrando o chao."],
   ["Agachamento goblet", "pernas", "Halter", "Iniciante", ["Segure o halter junto ao peito", "Cotovelos apontam para baixo", "Controle a descida"], "O peso na frente ajuda seu tronco. Usa ele como guia e nao deixa o joelho cair para dentro."],
@@ -360,7 +367,7 @@ function fillFormFromClient(client) {
   $("#days").value = profile.days || 4;
   $("#sessionDuration").value = profile.sessionDuration || 50;
   $("#equipment").value = profile.equipment || "academia";
-  $("#equipmentHelp").textContent = equipmentHelp[$("#equipment").value];
+  updateEquipmentHelp();
   $("#limitations").value = profile.limitations || "";
   $("#injuries").value = profile.injuries || "";
   $("#medical").value = profile.medical || "";
@@ -840,6 +847,7 @@ function init() {
   renderExercises();
   renderExerciseLibrary();
   renderClients();
+  updateEquipmentHelp();
   if (activeClient()) {
     fillFormFromClient(activeClient());
     state.plan = activeClient().plan || buildPlan(getFormData());
@@ -872,7 +880,7 @@ function init() {
   });
 
   $("#equipment").addEventListener("change", (event) => {
-    $("#equipmentHelp").textContent = equipmentHelp[event.target.value];
+    updateEquipmentHelp(event.target.value);
   });
 
   $("#planForm").addEventListener("submit", (event) => {
