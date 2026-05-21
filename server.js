@@ -9,6 +9,9 @@ const port = Number(process.env.PORT || 4174);
 const host = process.env.HOST || "0.0.0.0";
 const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 const sessions = new Map();
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const hasSupabase = Boolean(supabaseUrl && supabaseKey);
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -43,6 +46,19 @@ function createUser(id, name, email, password, role) {
 
 function publicUser(user) {
   return { id: user.id, name: user.name, email: user.email, role: user.role, clientId: user.clientId || null };
+}
+
+function fromSupabaseUser(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    salt: row.salt,
+    passwordHash: row.password_hash,
+    clientId: row.client_id
+  };
 }
 
 function seedDb() {
@@ -86,6 +102,14 @@ function seedDb() {
 }
 
 async function readDb() {
+  if (hasSupabase) {
+    const [users, clients] = await Promise.all([
+      supabaseRequest("/rest/v1/users?select=*"),
+      supabaseRequest("/rest/v1/clients?select=*")
+    ]);
+    return { users: users.map(fromSupabaseUser), clients: clients.map(fromSupabaseClient) };
+  }
+
   try {
     return JSON.parse(await fs.readFile(dbPath, "utf8"));
   } catch {
@@ -97,8 +121,118 @@ async function readDb() {
 }
 
 async function writeDb(db) {
+  if (hasSupabase) return;
   await fs.mkdir(path.dirname(dbPath), { recursive: true });
   await fs.writeFile(dbPath, JSON.stringify(db, null, 2));
+}
+
+function fromSupabaseClient(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    coachId: row.coach_id,
+    userId: row.user_id,
+    name: row.name,
+    goal: row.goal,
+    level: row.level,
+    adherence: row.adherence,
+    risk: row.risk,
+    next: row.next_action,
+    profile: row.profile || {},
+    plan: row.plan || null
+  };
+}
+
+function toSupabaseClient(client) {
+  return {
+    id: client.id,
+    coach_id: client.coachId,
+    user_id: client.userId,
+    name: client.name,
+    goal: client.goal,
+    level: client.level,
+    adherence: client.adherence,
+    risk: client.risk,
+    next_action: client.next,
+    profile: client.profile || {},
+    plan: client.plan || null
+  };
+}
+
+async function supabaseRequest(pathname, options = {}) {
+  const response = await fetch(`${supabaseUrl}${pathname}`, {
+    ...options,
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+      ...(options.headers || {})
+    }
+  });
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+  if (!response.ok) {
+    throw new Error(data?.message || data?.hint || "Falha no Supabase.");
+  }
+  return data;
+}
+
+async function listClientsForCoach(coachId) {
+  if (!hasSupabase) {
+    const db = await readDb();
+    return db.clients.filter((client) => client.coachId === coachId);
+  }
+  const rows = await supabaseRequest(`/rest/v1/clients?coach_id=eq.${encodeURIComponent(coachId)}&select=*&order=created_at.desc`);
+  return rows.map(fromSupabaseClient);
+}
+
+async function findClientById(id) {
+  if (!hasSupabase) {
+    const db = await readDb();
+    return { db, client: db.clients.find((item) => item.id === Number(id)) };
+  }
+  const rows = await supabaseRequest(`/rest/v1/clients?id=eq.${Number(id)}&select=*&limit=1`);
+  return { db: null, client: fromSupabaseClient(rows[0]) };
+}
+
+async function createClient(client) {
+  if (!hasSupabase) {
+    const db = await readDb();
+    db.clients.unshift(client);
+    await writeDb(db);
+    return client;
+  }
+  const rows = await supabaseRequest("/rest/v1/clients", {
+    method: "POST",
+    body: JSON.stringify(toSupabaseClient(client))
+  });
+  return fromSupabaseClient(rows[0]);
+}
+
+async function updateClient(client) {
+  if (!hasSupabase) {
+    const db = await readDb();
+    const index = db.clients.findIndex((item) => item.id === Number(client.id));
+    if (index >= 0) db.clients[index] = client;
+    await writeDb(db);
+    return client;
+  }
+  const rows = await supabaseRequest(`/rest/v1/clients?id=eq.${Number(client.id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(toSupabaseClient(client))
+  });
+  return fromSupabaseClient(rows[0]);
+}
+
+async function deleteClient(id) {
+  if (!hasSupabase) {
+    const db = await readDb();
+    db.clients = db.clients.filter((item) => item.id !== Number(id));
+    await writeDb(db);
+    return;
+  }
+  await supabaseRequest(`/rest/v1/clients?id=eq.${Number(id)}`, { method: "DELETE" });
 }
 
 function getAuth(req) {
@@ -217,10 +351,8 @@ async function routeClients(req, res) {
   const session = requireAuth(req, res, "admin");
   if (!session) return;
 
-  const db = await readDb();
-
   if (req.method === "GET") {
-    sendJson(res, 200, { clients: db.clients.filter((client) => client.coachId === session.user.id) });
+    sendJson(res, 200, { clients: await listClientsForCoach(session.user.id) });
     return;
   }
 
@@ -240,9 +372,7 @@ async function routeClients(req, res) {
       profile: payload.profile || {},
       plan: null
     };
-    db.clients.unshift(client);
-    await writeDb(db);
-    sendJson(res, 201, { client });
+    sendJson(res, 201, { client: await createClient(client) });
     return;
   }
 
@@ -253,8 +383,7 @@ async function routeClient(req, res, id, action) {
   const session = requireAuth(req, res);
   if (!session) return;
 
-  const db = await readDb();
-  const client = db.clients.find((item) => item.id === Number(id));
+  const { client } = await findClientById(id);
 
   if (!client) {
     sendJson(res, 404, { error: "Aluno nao encontrado." });
@@ -276,8 +405,7 @@ async function routeClient(req, res, id, action) {
     }
     const payload = JSON.parse(await readBody(req));
     client.plan = payload.plan || null;
-    await writeDb(db);
-    sendJson(res, 200, { client });
+    sendJson(res, 200, { client: await updateClient(client) });
     return;
   }
 
@@ -288,8 +416,7 @@ async function routeClient(req, res, id, action) {
     }
     const payload = JSON.parse(await readBody(req));
     Object.assign(client, payload);
-    await writeDb(db);
-    sendJson(res, 200, { client });
+    sendJson(res, 200, { client: await updateClient(client) });
     return;
   }
 
@@ -298,8 +425,7 @@ async function routeClient(req, res, id, action) {
       sendJson(res, 403, { error: "Apenas o personal pode excluir aluno." });
       return;
     }
-    db.clients = db.clients.filter((item) => item.id !== Number(id));
-    await writeDb(db);
+    await deleteClient(id);
     sendJson(res, 200, { ok: true });
     return;
   }
@@ -316,9 +442,10 @@ async function routeMe(req, res) {
   const session = requireAuth(req, res);
   if (!session) return;
 
-  const db = await readDb();
   if (session.user.role === "student") {
-    const client = db.clients.find((item) => item.userId === session.user.id);
+    const db = await readDb();
+    const rawClient = db.clients.find((item) => item.userId === session.user.id || item.user_id === session.user.id);
+    const client = rawClient?.coach_id ? fromSupabaseClient(rawClient) : rawClient;
     sendJson(res, 200, { user: session.user, client });
     return;
   }

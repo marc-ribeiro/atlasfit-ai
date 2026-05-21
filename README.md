@@ -32,6 +32,22 @@ npm start
 
 Sem `OPENAI_API_KEY`, o app continua funcionando com o motor demo local.
 
+## Banco de dados com Supabase
+
+1. Crie um projeto gratuito em https://supabase.com.
+2. Abra **SQL Editor**.
+3. Cole e execute o conteudo de `supabase-schema.sql`.
+4. No Render, em **Environment**, adicione:
+
+```text
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key
+```
+
+Use a **service role key** apenas no Render. Nunca coloque essa chave no GitHub ou no frontend.
+
+Sem Supabase configurado, o app usa `data/db.json` como fallback local.
+
 ## Colocar no ar com Render
 
 1. Crie um repositorio no GitHub.
